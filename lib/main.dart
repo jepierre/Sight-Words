@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 void main() {
   runApp(MyApp());
@@ -28,16 +32,47 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  var current = WordPair.random();
+  var wordPairList = <WordPair>[WordPair.random()];
+
+  final maxList = 10;
+  var wordIndex = 0;
 
   void getNext() {
-    current = WordPair.random();
+    wordIndex++;
+
+    if (wordIndex >= wordPairList.length) {
+      var tempWordPair = WordPair.random();
+
+      if (!wordPairList.contains(tempWordPair)) {
+        wordPairList.add(tempWordPair);
+      } else {
+        wordIndex--;
+        getNext();
+      }
+    }
+
+    if (wordIndex >= maxList) {
+      wordIndex = 0;
+    }
+
+    print("wordList: $wordPairList ");
+    notifyListeners();
+  }
+
+  void getPrevious() {
+    wordIndex--;
+
+    if (wordIndex < 0) {
+      wordIndex = wordPairList.length - 1;
+    }
     notifyListeners();
   }
 
   var favorites = <WordPair>[];
 
   void toggleFavorite() {
+    var current = wordPairList[wordIndex];
+
     if (favorites.contains(current)) {
       favorites.remove(current);
     } else {
@@ -134,15 +169,6 @@ class FavoritePage extends StatelessWidget {
           )
       ],
     );
-    // return Center(
-    //   child: Column(
-    //     mainAxisAlignment: MainAxisAlignment.center,
-    //     children: [
-    //       Text("Favorites:"),
-    //       for (var fav in favoriteList.toList()) Text(fav.toString()),
-    //     ],
-    //   ),
-    // );
   }
 }
 
@@ -150,7 +176,8 @@ class GeneratorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-    var pair = appState.current;
+    var appStateCurrentIndex = appState.wordIndex;
+    var pair = appState.wordPairList[appStateCurrentIndex];
 
     IconData icon;
     if (appState.favorites.contains(pair)) {
@@ -168,6 +195,14 @@ class GeneratorPage extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
+              IconButton(
+                onPressed: () {
+                  appState.getPrevious();
+                },
+                icon: Icon(Icons.arrow_back),
+                // Text(''),
+              ),
+              SizedBox(width: 10),
               ElevatedButton.icon(
                 onPressed: () {
                   appState.toggleFavorite();
@@ -176,11 +211,12 @@ class GeneratorPage extends StatelessWidget {
                 label: Text('Like'),
               ),
               SizedBox(width: 10),
-              ElevatedButton(
+              IconButton(
                 onPressed: () {
                   appState.getNext();
                 },
-                child: Text('Next'),
+                icon: Icon(Icons.arrow_forward),
+                // Text(''),
               ),
             ],
           ),
@@ -216,5 +252,29 @@ class BigCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class SightWordCard {
+  final int id;
+  final String word;
+  final Color color;
+
+  const SightWordCard(
+      {required this.id, required this.word, required this.color});
+
+  // Convert a Card into a Map
+  Map<String, dynamic> toMap() {
+    return {
+      "id": id,
+      "word": word,
+      "color": color,
+    };
+  }
+
+  // Implement toString to make it easier to see information about each card
+  @override
+  String toString() {
+    return 'Card{id: $id, word: $word, color: $color}';
   }
 }
