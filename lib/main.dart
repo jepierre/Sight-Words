@@ -172,7 +172,9 @@ class FavoritePage extends StatelessWidget {
   }
 }
 
-class GeneratorPage extends StatelessWidget {
+class WordGroupPage extends StatelessWidget {
+  const WordGroupPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
@@ -186,43 +188,129 @@ class GeneratorPage extends StatelessWidget {
       icon = Icons.favorite_border;
     }
 
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Word group"),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            BigCard(pair: pair),
+            SizedBox(height: 10),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    appState.getPrevious();
+                  },
+                  icon: Icon(Icons.arrow_back),
+                  // Text(''),
+                ),
+                SizedBox(width: 10),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    appState.toggleFavorite();
+                  },
+                  icon: Icon(icon),
+                  label: Text('Like'),
+                ),
+                SizedBox(width: 10),
+                IconButton(
+                  onPressed: () {
+                    appState.getNext();
+                  },
+                  icon: Icon(Icons.arrow_forward),
+                  // Text(''),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class GeneratorPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          BigCard(pair: pair),
-          SizedBox(height: 10),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                onPressed: () {
-                  appState.getPrevious();
-                },
-                icon: Icon(Icons.arrow_back),
-                // Text(''),
-              ),
-              SizedBox(width: 10),
-              ElevatedButton.icon(
-                onPressed: () {
-                  appState.toggleFavorite();
-                },
-                icon: Icon(icon),
-                label: Text('Like'),
-              ),
-              SizedBox(width: 10),
-              IconButton(
-                onPressed: () {
-                  appState.getNext();
-                },
-                icon: Icon(Icons.arrow_forward),
-                // Text(''),
-              ),
-            ],
-          ),
+          WordGroupCard(name: "Red", color: Color.fromRGBO(255, 0, 0, 1)),
+          WordGroupCard(name: "Blue", color: Color.fromARGB(255, 0, 0, 255)),
+          WordGroupCard(
+              name: "Yellow", color: Color.fromARGB(255, 255, 255, 0)),
+          WordGroupCard(name: "Green", color: Color.fromARGB(255, 8, 253, 0)),
         ],
       ),
     );
+  }
+}
+
+class WordGroupCard extends StatelessWidget {
+  const WordGroupCard({
+    super.key,
+    required this.name,
+    required this.color,
+  });
+
+  final String name;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    final style = theme.textTheme.displayMedium!.copyWith(
+      color: color,
+    );
+
+    return InkWell(
+      onTap: () {
+        print("$name card clicked");
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const WordGroupPage()));
+      },
+      child: Card(
+        color: Color.fromARGB(255, 202, 202, 202),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Text(
+            name,
+            style: style,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SightWord {
+  final int id;
+  final String word;
+  final Color color;
+
+  const SightWord({required this.id, required this.word, required this.color});
+
+  // Convert a Card into a Map
+  Map<String, dynamic> toMap() {
+    return {
+      "id": id,
+      "word": word,
+      "color": color,
+    };
+  }
+
+  // Implement toString to make it easier to see information about each card
+  @override
+  String toString() {
+    return 'Card{id: $id, word: $word, color: $color}';
   }
 }
 
@@ -252,29 +340,5 @@ class BigCard extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class SightWordCard {
-  final int id;
-  final String word;
-  final Color color;
-
-  const SightWordCard(
-      {required this.id, required this.word, required this.color});
-
-  // Convert a Card into a Map
-  Map<String, dynamic> toMap() {
-    return {
-      "id": id,
-      "word": word,
-      "color": color,
-    };
-  }
-
-  // Implement toString to make it easier to see information about each card
-  @override
-  String toString() {
-    return 'Card{id: $id, word: $word, color: $color}';
   }
 }
