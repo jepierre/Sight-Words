@@ -41,19 +41,121 @@ class MyAppState extends ChangeNotifier {
     SightWordGroup("Yellow", "description", Colors.yellow),
     SightWordGroup("Green", "description", Colors.green),
     SightWordGroup("Blue", "description", Colors.blue),
-    SightWordGroup("Indigo", "description", Colors.indigo),
     SightWordGroup("Purple", "description", Colors.purple),
+    SightWordGroup("Pink", "description", Colors.pink),
+    SightWordGroup("Black", "description", Colors.black),
   ];
 
   var sightWords = <SightWord>[
-    SightWord(id: 0, word: "if", color: Colors.red),
-    SightWord(id: 0, word: "then", color: Colors.red),
-    SightWord(id: 0, word: "what", color: Colors.red),
-    SightWord(id: 0, word: "why", color: Colors.red),
-    SightWord(id: 1, word: "if", color: Colors.blue),
-    SightWord(id: 1, word: "so", color: Colors.yellow),
+    // red words
+    SightWord(id: 0, word: "I", color: Colors.red),
+    SightWord(id: 0, word: "can", color: Colors.red),
+    SightWord(id: 0, word: "the", color: Colors.red),
+    SightWord(id: 0, word: "see", color: Colors.red),
+    SightWord(id: 0, word: "we", color: Colors.red),
+    SightWord(id: 0, word: "a", color: Colors.red),
+    SightWord(id: 0, word: "like", color: Colors.red),
+    SightWord(id: 0, word: "to", color: Colors.red),
+    SightWord(id: 0, word: "and", color: Colors.red),
+    SightWord(id: 0, word: "go", color: Colors.red),
+    SightWord(id: 0, word: "is", color: Colors.red),
+    SightWord(id: 0, word: "my", color: Colors.red),
+    SightWord(id: 0, word: "on", color: Colors.red),
+    // orange words
+    SightWord(id: 1, word: "me", color: Colors.orange),
+    SightWord(id: 1, word: "in", color: Colors.orange),
+    SightWord(id: 1, word: "so", color: Colors.orange),
+    SightWord(id: 1, word: "it", color: Colors.orange),
+    SightWord(id: 1, word: "up", color: Colors.orange),
+    SightWord(id: 1, word: "at", color: Colors.orange),
+    SightWord(id: 1, word: "he", color: Colors.orange),
+    SightWord(id: 1, word: "do", color: Colors.orange),
+    SightWord(id: 1, word: "you", color: Colors.orange),
+    SightWord(id: 1, word: "no", color: Colors.orange),
+    SightWord(id: 1, word: "am", color: Colors.orange),
+    SightWord(id: 1, word: "big", color: Colors.orange),
+    SightWord(id: 1, word: "play", color: Colors.orange),
+    // yellow words
+    SightWord(id: 1, word: "went", color: Colors.yellow),
+    SightWord(id: 1, word: "are", color: Colors.yellow),
+    SightWord(id: 1, word: "this", color: Colors.yellow),
+    SightWord(id: 1, word: "look", color: Colors.yellow),
+    SightWord(id: 1, word: "for", color: Colors.yellow),
+    SightWord(id: 1, word: "get", color: Colors.yellow),
+    SightWord(id: 1, word: "come", color: Colors.yellow),
+    SightWord(id: 1, word: "not", color: Colors.yellow),
+    SightWord(id: 1, word: "two", color: Colors.yellow),
+    SightWord(id: 1, word: "was", color: Colors.yellow),
+    SightWord(id: 1, word: "make", color: Colors.yellow),
+    SightWord(id: 1, word: "they", color: Colors.yellow),
+    // green words
+    SightWord(id: 2, word: "will", color: Colors.green),
+    SightWord(id: 2, word: "too", color: Colors.green),
+    SightWord(id: 2, word: "all", color: Colors.green),
+    SightWord(id: 2, word: "be", color: Colors.green),
+    SightWord(id: 2, word: "ate", color: Colors.green),
+    SightWord(id: 2, word: "one", color: Colors.green),
+    SightWord(id: 2, word: "funny", color: Colors.green),
     SightWord(id: 2, word: "what", color: Colors.green),
-    SightWord(id: 3, word: "who", color: Colors.purple),
+    SightWord(id: 2, word: "did", color: Colors.green),
+    SightWord(id: 2, word: "has", color: Colors.green),
+    SightWord(id: 2, word: "of", color: Colors.green),
+    SightWord(id: 2, word: "or", color: Colors.green),
+    SightWord(id: 2, word: "with", color: Colors.green),
+    // blue words
+    SightWord(id: 3, word: "back", color: Colors.blue),
+    SightWord(id: 3, word: "if", color: Colors.blue),
+    SightWord(id: 3, word: "but", color: Colors.blue),
+    SightWord(id: 3, word: "made", color: Colors.blue),
+    SightWord(id: 3, word: "day", color: Colors.blue),
+    SightWord(id: 3, word: "far", color: Colors.blue),
+    SightWord(id: 3, word: "said", color: Colors.blue),
+    SightWord(id: 3, word: "out", color: Colors.blue),
+    SightWord(id: 3, word: "now", color: Colors.blue),
+    SightWord(id: 3, word: "does", color: Colors.blue),
+    SightWord(id: 3, word: "have", color: Colors.blue),
+    SightWord(id: 3, word: "ran", color: Colors.blue),
+    // purple words 
+    SightWord(id: 4, word: "came", color: Colors.purple),
+    SightWord(id: 4, word: "its", color: Colors.purple),
+    SightWord(id: 4, word: "man", color: Colors.purple),
+    SightWord(id: 4, word: "she", color: Colors.purple),
+    SightWord(id: 4, word: "use", color: Colors.purple),
+    SightWord(id: 4, word: "word", color: Colors.purple),
+    SightWord(id: 4, word: "his", color: Colors.purple),
+    SightWord(id: 4, word: "more", color: Colors.purple),
+    SightWord(id: 4, word: "write", color: Colors.purple),
+    SightWord(id: 4, word: "yes", color: Colors.purple),
+    SightWord(id: 4, word: "saw", color: Colors.purple),
+    SightWord(id: 4, word: "way", color: Colors.purple),
+    SightWord(id: 4, word: "who", color: Colors.purple),
+    // pink words
+    SightWord(id: 5, word: "been", color: Colors.pink),
+    SightWord(id: 5, word: "your", color: Colors.pink),
+    SightWord(id: 5, word: "each", color: Colors.pink),
+    SightWord(id: 5, word: "good", color: Colors.pink),
+    SightWord(id: 5, word: "hand", color: Colors.pink),
+    SightWord(id: 5, word: "first", color: Colors.pink),
+    SightWord(id: 5, word: "help", color: Colors.pink),
+    SightWord(id: 5, word: "into", color: Colors.pink),
+    SightWord(id: 5, word: "here", color: Colors.pink),
+    SightWord(id: 5, word: "many", color: Colors.pink),
+    SightWord(id: 5, word: "little", color: Colors.pink),
+    SightWord(id: 5, word: "long", color: Colors.pink),
+    // black words
+    SightWord(id: 6, word: "must", color: Colors.black),
+    SightWord(id: 6, word: "find", color: Colors.black),
+    SightWord(id: 6, word: "new", color: Colors.black),
+    SightWord(id: 6, word: "part", color: Colors.black),
+    SightWord(id: 6, word: "please", color: Colors.black),
+    SightWord(id: 6, word: "say", color: Colors.black),
+    SightWord(id: 6, word: "there", color: Colors.black),
+    SightWord(id: 6, word: "time", color: Colors.black),
+    SightWord(id: 6, word: "want", color: Colors.black),
+    SightWord(id: 6, word: "were", color: Colors.black),
+    SightWord(id: 6, word: "well", color: Colors.black),
+    SightWord(id: 6, word: "ride", color: Colors.black),
+
   ];
 }
 
@@ -102,6 +204,19 @@ class _MyHomePageState extends State<MyHomePage> {
       //       ),
       //       ListTile(
       //         leading: Icon(
+      //           Icons.home,
+      //         ),
+      //         title: const Text('All Words'),
+      //         onTap: () {
+      //             Navigator.push(
+      //                 context,
+      //                 MaterialPageRoute(
+      //                     builder: (context) => AllWordsPage()));
+      //           // Navigator.pop(context);
+      //         },
+      //       ),
+      //       ListTile(
+      //         leading: Icon(
       //           Icons.train,
       //         ),
       //         title: const Text('About'),
@@ -132,6 +247,7 @@ class _WordGroupPageState extends State<WordGroupPage> {
   var wordGroupIndex = 0;
   var wordGroupList = <SightWord>[];
   var sightWordsOrder = [];
+  var sightWordCounter = 1;
   final FlutterTts flutterTts = FlutterTts();
 
   void getNext() {
@@ -142,6 +258,7 @@ class _WordGroupPageState extends State<WordGroupPage> {
       print(sightWordsOrder);
     }
     wordGroupIndex = sightWordsOrder.removeAt(0);
+    sightWordCounter = wordGroupList.length - sightWordsOrder.length;
 
     print("remaining elements: $sightWordsOrder");
     print(
@@ -187,6 +304,7 @@ class _WordGroupPageState extends State<WordGroupPage> {
 
     return Scaffold(
       appBar: AppBar(
+          centerTitle: true,
           title: Text(widget.sightWordGroup.title, style: style),
           // backgroundColor: Theme.of(context).colorScheme.inversePrimary,),
           backgroundColor: widget.sightWordGroup.color),
@@ -203,10 +321,10 @@ class _WordGroupPageState extends State<WordGroupPage> {
               children: [
                 IconButton(
                   onPressed: () async {
-                    await flutterTts.speak(wordGroupList[wordGroupIndex].word);
+                    // await flutterTts.speak(wordGroupList[wordGroupIndex].word);
                     getNext();
                   },
-                  icon: Icon(Icons.close, color: Colors.red),
+                  icon: Icon(Icons.close, color: Colors.red, size: 50),
                   // Text(''),
                 ),
                 SizedBox(width: 50),
@@ -217,14 +335,44 @@ class _WordGroupPageState extends State<WordGroupPage> {
                   icon: Icon(
                     Icons.check,
                     color: Colors.green,
+                    size: 50,
                   ),
                   // Text(''),
                 ),
               ],
             ),
+            Center(
+              child: Text(
+                  "Learning $sightWordCounter of ${wordGroupList.length} words!"),
+            )
           ],
         ),
       ),
+    );
+  }
+}
+
+class AllWordsPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+
+    if (appState.sightWords.isEmpty) {
+      return Center(child: Text("No words added yet!"));
+    }
+
+    return ListView(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: Text('You have '
+              '${appState.sightWords.length} words.'),
+        ),
+        for (var sightWord in appState.sightWords)
+          ListTile(
+            title: Text(sightWord.word),
+          )
+      ],
     );
   }
 }
@@ -247,15 +395,22 @@ class GeneratorPage extends StatelessWidget {
           height: 150,
           color: appState.sightWordGroups[index].color,
           margin: const EdgeInsets.all(8),
-          child: ListTile(
-              title: Text(appState.sightWordGroups[index].title, style: style),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => WordGroupPage(
-                            sightWordGroup: appState.sightWordGroups[index])));
-              }),
+          child: Center(
+            child: ListTile(
+                title: Text(
+                  appState.sightWordGroups[index].title,
+                  style: style,
+                  textAlign: TextAlign.center,
+                ),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => WordGroupPage(
+                              sightWordGroup:
+                                  appState.sightWordGroups[index])));
+                }),
+          ),
         );
       },
     );
