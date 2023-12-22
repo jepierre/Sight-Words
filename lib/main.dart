@@ -32,9 +32,6 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  var wordPairList = <WordPair>[WordPair.random()];
-  var redWordList = ["you", "if"];
-  var blueWordList = ["blue", "two"];
   var sightWordGroups = <SightWordGroup>[
     SightWordGroup("Red", "", Colors.red),
     SightWordGroup("Blue", "description", Colors.blue),
@@ -45,56 +42,12 @@ class MyAppState extends ChangeNotifier {
 
   var sightWords = <SightWord>[
     SightWord(id: 0, word: "if", color: Colors.red),
+    SightWord(id: 0, word: "then", color: Colors.red),
     SightWord(id: 1, word: "if", color: Colors.blue),
+    SightWord(id: 1, word: "so", color: Colors.blue),
     SightWord(id: 2, word: "what", color: Colors.green),
     SightWord(id: 3, word: "who", color: Colors.purple),
   ];
-  final maxList = 10;
-  var wordIndex = 0;
-
-  void getNext() {
-    wordIndex++;
-
-    if (wordIndex >= wordPairList.length) {
-      var tempWordPair = WordPair.random();
-
-      if (!wordPairList.contains(tempWordPair)) {
-        wordPairList.add(tempWordPair);
-      } else {
-        wordIndex--;
-        getNext();
-      }
-    }
-
-    if (wordIndex >= maxList) {
-      wordIndex = 0;
-    }
-
-    print("wordList: $wordPairList ");
-    notifyListeners();
-  }
-
-  void getPrevious() {
-    wordIndex--;
-
-    if (wordIndex < 0) {
-      wordIndex = wordPairList.length - 1;
-    }
-    notifyListeners();
-  }
-
-  var favorites = <WordPair>[];
-
-  void toggleFavorite() {
-    var current = wordPairList[wordIndex];
-
-    if (favorites.contains(current)) {
-      favorites.remove(current);
-    } else {
-      favorites.add(current);
-    }
-    notifyListeners();
-  }
 }
 
 class MyHomePage extends StatefulWidget {
@@ -126,44 +79,61 @@ class WordGroupPage extends StatefulWidget {
 
 class _WordGroupPageState extends State<WordGroupPage> {
   var wordGroupIndex = 0;
+  var wordGroupList = <SightWord>[];
+
+  void getNext() {
+    setState(() {
+      wordGroupIndex++;
+
+      if (wordGroupIndex >= wordGroupList.length) {
+        wordGroupIndex = 0;
+      }
+      print(
+          "index: $wordGroupIndex, text: ${wordGroupList[wordGroupIndex].word}");
+    });
+  }
+
+  void getPrevious() {
+    setState(() {
+      wordGroupIndex--;
+
+      if (wordGroupIndex < 0) {
+        wordGroupIndex = wordGroupList.length - 1;
+      }
+      print(
+          "index: $wordGroupIndex, text: ${wordGroupList[wordGroupIndex].word}");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-    var appStateCurrentIndex = appState.wordIndex;
-    var pair = appState.wordPairList[appStateCurrentIndex];
-
-    var wordGroupList = <SightWord>[];
 
     for (var sightWord in appState.sightWords) {
-      if (sightWord.color == widget.sightWordGroup.color) {
+      if (sightWord.color.value == widget.sightWordGroup.color.value &&
+          !wordGroupList.contains(sightWord)) {
         wordGroupList.add(sightWord);
       }
     }
 
-    // IconData icon;
-    // if (appState.favorites.contains(pair)) {
-    //   icon = Icons.favorite;
-    // } else {
-    //   icon = Icons.favorite_border;
-    // }
-
     return Scaffold(
       appBar: AppBar(
-        title: Text("${widget.sightWordGroup}.title"),
+        title: Text(widget.sightWordGroup.title),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SightWordCard(sightWord: wordGroupList[wordGroupIndex]),
+            SightWordCard(
+              sightWord: wordGroupList[wordGroupIndex],
+            ),
             SizedBox(height: 10),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
                   onPressed: () {
-                    appState.getPrevious();
+                    getPrevious();
                   },
                   icon: Icon(Icons.arrow_back),
                   // Text(''),
@@ -171,7 +141,7 @@ class _WordGroupPageState extends State<WordGroupPage> {
                 SizedBox(width: 50),
                 IconButton(
                   onPressed: () {
-                    appState.getNext();
+                    getNext();
                   },
                   icon: Icon(Icons.arrow_forward),
                   // Text(''),
@@ -190,6 +160,12 @@ class GeneratorPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
 
+    final theme = Theme.of(context);
+
+    final style = theme.textTheme.displayMedium!.copyWith(
+      color: theme.colorScheme.onPrimary,
+    );
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -199,7 +175,6 @@ class GeneratorPage extends StatelessWidget {
           onPressed: () {},
         ),
       ),
-
       body: ListView.builder(
         itemCount: appState.sightWordGroups.length,
         itemBuilder: (context, index) {
@@ -208,7 +183,8 @@ class GeneratorPage extends StatelessWidget {
             color: appState.sightWordGroups[index].color,
             margin: const EdgeInsets.all(8),
             child: ListTile(
-                title: Text(appState.sightWordGroups[index].title),
+                title:
+                    Text(appState.sightWordGroups[index].title, style: style),
                 onTap: () {
                   Navigator.push(
                       context,
@@ -221,79 +197,9 @@ class GeneratorPage extends StatelessWidget {
           // },);
         },
       ),
-      // body: Center(
-      //   child: Column(
-      //     mainAxisAlignment: MainAxisAlignment.center,
-      //     children: [
-      //       WordGroupCard(
-      //         name: "Red",
-      //         color: Color.fromRGBO(240, 5, 5, 1),
-      //         wordList: ["if", "sdf"],
-      //       ),
-      //       WordGroupCard(
-      //         name: "Blue",
-      //         color: Color.fromARGB(255, 0, 0, 255),
-      //         wordList: ["x", "y", "z"],
-      //       ),
-      //       WordGroupCard(
-      //         name: "Yellow",
-      //         color: Color.fromARGB(255, 255, 255, 0),
-      //         wordList: ['dsf'],
-      //       ),
-      //       WordGroupCard(
-      //         name: "Green",
-      //         color: Color.fromARGB(255, 8, 253, 0),
-      //         wordList: ['green', "words"],
-      //       ),
-      //     ],
-      //   ),
-      // ),
     );
   }
 }
-
-// class WordGroupCard extends StatelessWidget {
-//   const WordGroupCard({
-//     super.key,
-//     required this.name,
-//     required this.color,
-//     required this.wordList,
-//   });
-
-//   final String name;
-//   final Color color;
-//   final List wordList;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final theme = Theme.of(context);
-
-//     final style = theme.textTheme.displayMedium!.copyWith(
-//       color: color,
-//     );
-
-//     return InkWell(
-//       onTap: () {
-//         print("$name card clicked");
-//         Navigator.push(
-//             context,
-//             MaterialPageRoute(
-//                 // builder: (context) => const WordGroupPage(wordList: wordList)));
-//                 builder: (context) => const WordGroupPage(sightWordGroup: ,)));
-//       },
-//       child: Card(
-//         color: Color.fromARGB(255, 202, 202, 202),
-//         child: Padding(
-//           padding: const EdgeInsets.all(20),
-//           child: Text(
-//             name,
-//             style: style,
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 class SightWord {
   final int id;
@@ -331,7 +237,7 @@ class SightWordCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     final style = theme.textTheme.displayMedium!.copyWith(
-      color: Color.fromARGB(255, 255, 255, 255),
+      color: Colors.white,
     );
 
     return Card(
