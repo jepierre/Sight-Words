@@ -21,14 +21,14 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(
-        title: 'Namer App',
+        title: 'Sight Words!',
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(
               seedColor: const Color.fromARGB(255, 34, 93, 255)),
           // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         ),
-        home: MyHomePage(),
+        home: const MyHomePage(title: "Sight Words!"),
       ),
     );
   }
@@ -58,6 +58,10 @@ class MyAppState extends ChangeNotifier {
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  final String title;
+
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -68,6 +72,46 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(widget.title),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.menu),
+        //   onPressed: () {},
+        // ),
+      ),
+      // drawer: Drawer(
+      //   child: ListView(
+      //     // Important: Remove any padding from the ListView.
+      //     padding: EdgeInsets.zero,
+      //     children: [
+      //       DrawerHeader(
+      //         decoration: BoxDecoration(
+      //           color: Colors.blue,
+      //         ),
+      //         child: Text(widget.title),
+      //       ),
+      //       ListTile(
+      //         leading: Icon(
+      //           Icons.home,
+      //         ),
+      //         title: const Text('Home'),
+      //         onTap: () {
+      //           Navigator.pop(context);
+      //         },
+      //       ),
+      //       ListTile(
+      //         leading: Icon(
+      //           Icons.train,
+      //         ),
+      //         title: const Text('About'),
+      //         onTap: () {
+      //           Navigator.pop(context);
+      //         },
+      //       ),
+      //     ],
+      //   ),
+      // ),
       body: Center(
         child: GeneratorPage(),
       ),
@@ -88,7 +132,7 @@ class _WordGroupPageState extends State<WordGroupPage> {
   var wordGroupIndex = 0;
   var wordGroupList = <SightWord>[];
   var sightWordsOrder = [];
-    final FlutterTts flutterTts = FlutterTts();
+  final FlutterTts flutterTts = FlutterTts();
 
   void getNext() {
     if (sightWordsOrder.isEmpty) {
@@ -196,37 +240,24 @@ class GeneratorPage extends StatelessWidget {
       color: theme.colorScheme.onPrimary,
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Sight Words!"),
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {},
-        ),
-      ),
-      body: ListView.builder(
-        itemCount: appState.sightWordGroups.length,
-        itemBuilder: (context, index) {
-          return Container(
-            height: 150,
-            color: appState.sightWordGroups[index].color,
-            margin: const EdgeInsets.all(8),
-            child: ListTile(
-                title:
-                    Text(appState.sightWordGroups[index].title, style: style),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => WordGroupPage(
-                              sightWordGroup:
-                                  appState.sightWordGroups[index])));
-                }),
-          );
-          // },);
-        },
-      ),
+    return ListView.builder(
+      itemCount: appState.sightWordGroups.length,
+      itemBuilder: (context, index) {
+        return Container(
+          height: 150,
+          color: appState.sightWordGroups[index].color,
+          margin: const EdgeInsets.all(8),
+          child: ListTile(
+              title: Text(appState.sightWordGroups[index].title, style: style),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => WordGroupPage(
+                            sightWordGroup: appState.sightWordGroups[index])));
+              }),
+        );
+      },
     );
   }
 }

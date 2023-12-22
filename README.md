@@ -34,4 +34,4 @@ Features:
 [x] order the word groups from easy to hard, use ROYGBV
 2. app should allow to review missed words
 [x] make miss and correct button
-4. help button that says the word
+[x] help button that says the word
