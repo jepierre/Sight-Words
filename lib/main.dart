@@ -44,7 +44,7 @@ class MyAppState extends ChangeNotifier {
     SightWord(id: 0, word: "if", color: Colors.red),
     SightWord(id: 0, word: "then", color: Colors.red),
     SightWord(id: 1, word: "if", color: Colors.blue),
-    SightWord(id: 1, word: "so", color: Colors.blue),
+    SightWord(id: 1, word: "so", color: Colors.yellow),
     SightWord(id: 2, word: "what", color: Colors.green),
     SightWord(id: 3, word: "who", color: Colors.purple),
   ];
@@ -116,10 +116,17 @@ class _WordGroupPageState extends State<WordGroupPage> {
       }
     }
 
+    final theme = Theme.of(context);
+
+    final style = theme.textTheme.displayMedium!.copyWith(
+      color: theme.colorScheme.onPrimary,
+    );
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.sightWordGroup.title),
-      ),
+        title: Text(widget.sightWordGroup.title,
+        style: style),
+      // backgroundColor: Theme.of(context).colorScheme.inversePrimary,),
+      backgroundColor: widget.sightWordGroup.color),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
