@@ -28,3 +28,10 @@ https://github.com/PacktPublishing/Flutter-Cookbook/tree/master
 https://github.com/nadintamer/Android-Flashcard-App
 
 https://codelabs.developers.google.com/codelabs/flutter-codelab-first#6
+
+
+Features: 
+[x] order the word groups from easy to hard, use ROYGBV
+2. app should allow to review missed words
+[x] make miss and correct button
+4. help button that says the word

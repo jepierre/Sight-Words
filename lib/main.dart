@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:collection';
+import 'dart:math';
+import 'package:flutter_tts/flutter_tts.dart';
 
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
@@ -34,15 +37,19 @@ class MyApp extends StatelessWidget {
 class MyAppState extends ChangeNotifier {
   var sightWordGroups = <SightWordGroup>[
     SightWordGroup("Red", "", Colors.red),
-    SightWordGroup("Blue", "description", Colors.blue),
+    SightWordGroup("Orange", "description", Colors.orange),
     SightWordGroup("Yellow", "description", Colors.yellow),
+    SightWordGroup("Green", "description", Colors.green),
+    SightWordGroup("Blue", "description", Colors.blue),
+    SightWordGroup("Indigo", "description", Colors.indigo),
     SightWordGroup("Purple", "description", Colors.purple),
-    SightWordGroup("Green", "description", Colors.green)
   ];
 
   var sightWords = <SightWord>[
     SightWord(id: 0, word: "if", color: Colors.red),
     SightWord(id: 0, word: "then", color: Colors.red),
+    SightWord(id: 0, word: "what", color: Colors.red),
+    SightWord(id: 0, word: "why", color: Colors.red),
     SightWord(id: 1, word: "if", color: Colors.blue),
     SightWord(id: 1, word: "so", color: Colors.yellow),
     SightWord(id: 2, word: "what", color: Colors.green),
@@ -80,34 +87,43 @@ class WordGroupPage extends StatefulWidget {
 class _WordGroupPageState extends State<WordGroupPage> {
   var wordGroupIndex = 0;
   var wordGroupList = <SightWord>[];
+  var sightWordsOrder = [];
+    final FlutterTts flutterTts = FlutterTts();
 
   void getNext() {
-    setState(() {
-      wordGroupIndex++;
+    if (sightWordsOrder.isEmpty) {
+      sightWordsOrder = Iterable<int>.generate(wordGroupList.length).toList();
+      sightWordsOrder.shuffle();
 
-      if (wordGroupIndex >= wordGroupList.length) {
-        wordGroupIndex = 0;
-      }
-      print(
-          "index: $wordGroupIndex, text: ${wordGroupList[wordGroupIndex].word}");
-    });
+      print(sightWordsOrder);
+    }
+    wordGroupIndex = sightWordsOrder.removeAt(0);
+
+    print("remaining elements: $sightWordsOrder");
+    print(
+        "index: $wordGroupIndex, text: ${wordGroupList[wordGroupIndex].word}");
+    setState(() {});
   }
 
   void getPrevious() {
-    setState(() {
-      wordGroupIndex--;
+    wordGroupIndex--;
 
-      if (wordGroupIndex < 0) {
-        wordGroupIndex = wordGroupList.length - 1;
-      }
-      print(
-          "index: $wordGroupIndex, text: ${wordGroupList[wordGroupIndex].word}");
-    });
+    if (wordGroupIndex < 0) {
+      wordGroupIndex = wordGroupList.length - 1;
+    }
+    print(
+        "index: $wordGroupIndex, text: ${wordGroupList[wordGroupIndex].word}");
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
+    final theme = Theme.of(context);
+
+    final style = theme.textTheme.displayMedium!.copyWith(
+      color: theme.colorScheme.onPrimary,
+    );
 
     for (var sightWord in appState.sightWords) {
       if (sightWord.color.value == widget.sightWordGroup.color.value &&
@@ -116,17 +132,20 @@ class _WordGroupPageState extends State<WordGroupPage> {
       }
     }
 
-    final theme = Theme.of(context);
+    if (wordGroupList.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+            title: Text(widget.sightWordGroup.title, style: style),
+            backgroundColor: widget.sightWordGroup.color),
+        body: Center(child: Text("No words in group yet.")),
+      );
+    }
 
-    final style = theme.textTheme.displayMedium!.copyWith(
-      color: theme.colorScheme.onPrimary,
-    );
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.sightWordGroup.title,
-        style: style),
-      // backgroundColor: Theme.of(context).colorScheme.inversePrimary,),
-      backgroundColor: widget.sightWordGroup.color),
+          title: Text(widget.sightWordGroup.title, style: style),
+          // backgroundColor: Theme.of(context).colorScheme.inversePrimary,),
+          backgroundColor: widget.sightWordGroup.color),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -139,10 +158,11 @@ class _WordGroupPageState extends State<WordGroupPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  onPressed: () {
-                    getPrevious();
+                  onPressed: () async {
+                    await flutterTts.speak(wordGroupList[wordGroupIndex].word);
+                    getNext();
                   },
-                  icon: Icon(Icons.arrow_back),
+                  icon: Icon(Icons.close, color: Colors.red),
                   // Text(''),
                 ),
                 SizedBox(width: 50),
@@ -150,7 +170,10 @@ class _WordGroupPageState extends State<WordGroupPage> {
                   onPressed: () {
                     getNext();
                   },
-                  icon: Icon(Icons.arrow_forward),
+                  icon: Icon(
+                    Icons.check,
+                    color: Colors.green,
+                  ),
                   // Text(''),
                 ),
               ],
@@ -247,13 +270,23 @@ class SightWordCard extends StatelessWidget {
       color: Colors.white,
     );
 
-    return Card(
-      color: sightWord.color,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Text(
-          sightWord.word,
-          style: style,
+    final FlutterTts flutterTts = FlutterTts();
+
+    return InkWell(
+      onTap: () async {
+        await flutterTts.speak(sightWord.word);
+        print("sightword tapped");
+      },
+      child: Card(
+        color: sightWord.color,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: InkWell(
+            child: Text(
+              sightWord.word,
+              style: style,
+            ),
+          ),
         ),
       ),
     );
@@ -267,32 +300,3 @@ class SightWordGroup {
 
   const SightWordGroup(this.title, this.description, this.color);
 }
-
-// class BigCard extends StatelessWidget {
-//   const BigCard({
-//     super.key,
-//     required this.pair,
-//   });
-
-//   final WordPair pair;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final theme = Theme.of(context);
-
-//     final style = theme.textTheme.displayMedium!.copyWith(
-//       color: theme.colorScheme.onPrimary,
-//     );
-
-//     return Card(
-//       color: theme.colorScheme.primary,
-//       child: Padding(
-//         padding: const EdgeInsets.all(20),
-//         child: Text(
-//           pair.asLowerCase,
-//           style: style,
-//         ),
-//       ),
-//     );
-//   }
-// }
