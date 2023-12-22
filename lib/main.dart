@@ -38,7 +38,10 @@ class MyAppState extends ChangeNotifier {
   var sightWordGroups = <SightWordGroup>[
     SightWordGroup("Red", "", Colors.red),
     SightWordGroup("Blue", "description", Colors.blue),
-    SightWordGroup("Yellow", "description", Colors.yellow)
+    SightWordGroup("Yellow", "description", Colors.yellow),
+    SightWordGroup("Purple", "description", Colors.purple),
+    SightWordGroup("Green", "description", Colors.green)
+
   ];
 
   final maxList = 10;
@@ -222,7 +225,6 @@ class GeneratorPage extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          // builder: (context) => const WordGroupPage(wordList: wordList)));
                           builder: (context) => const WordGroupPage()));
                 }),
           );
