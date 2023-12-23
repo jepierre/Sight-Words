@@ -202,7 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             ListTile(
               leading: Icon(
-                Icons.home,
+                Icons.abc,
               ),
               title: const Text('All Words'),
               onTap: () {
