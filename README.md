@@ -35,3 +35,20 @@ Features:
 2. app should allow to review missed words
 [x] make miss and correct button
 [x] help button that says the word
+
+
+TODO: 
+[] Implement spaced repetition algorithm. 
+A simple implementation would be to save all wrong cards and repeat them and keep repeating the wrong cards until the student gets them right. 
+Another option would be to use Machine learning!
+
+
+https://github.com/Maxvien/supermemo
+https://www.juliensobczak.com/inspect/2022/05/30/anki-srs.html
+dart implementation of sm2 algorithm:
+https://github.com/thyagoluciano/sm2
+https://pub.dev/packages/sm2/example
+
+
+Great resource for SRS algorithms
+https://www.juliensobczak.com/inspect/2022/05/30/anki-srs.html
