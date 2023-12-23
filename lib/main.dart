@@ -207,8 +207,8 @@ class _MyHomePageState extends State<MyHomePage> {
               title: const Text('All Words'),
               onTap: () {
                 Navigator.pop(context);
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => AllWordsPage()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => AllWordsPage()));
               },
             ),
             AboutListTile(
@@ -377,22 +377,34 @@ class AllWordsPage extends StatelessWidget {
       return Center(child: Text("No words added yet!"));
     }
 
+    final theme = Theme.of(context);
+
+    final style = theme.textTheme.displayMedium!.copyWith(
+      color: theme.colorScheme.onPrimary,
+    );
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('First Route'),
+        title: const Text('All Words'),
       ),
-      body: ListView(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Text('You have '
-                '${appState.sightWords.length} words.'),
-          ),
-          for (var sightWord in appState.sightWords)
-            ListTile(
-              title: Text(sightWord.word),
-            )
-        ],
+      body: ListView.builder(
+        itemCount: appState.sightWords.length,
+        itemBuilder: (context, index) {
+          return Container(
+            // height: 150,
+            color: appState.sightWords[index].color,
+            margin: const EdgeInsets.all(8),
+            child: Center(
+              child: ListTile(
+                  title: Text(
+                    appState.sightWords[index].word,
+                    style: style,
+                    textAlign: TextAlign.center,
+                  ),
+                  ),
+            ),
+          );
+        },
       ),
     );
   }
