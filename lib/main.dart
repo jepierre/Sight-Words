@@ -181,51 +181,47 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       drawer: Drawer(
-        child: ListView(
-          // Important: Remove any padding from the ListView.
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text(widget.title),
+          child: ListView(
+        // Important: Remove any padding from the ListView.
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: Colors.blue,
             ),
-            ListTile(
-              leading: Icon(
-                Icons.home,
-              ),
-              title: const Text('Home'),
-              onTap: () {
-                Navigator.pop(context);
-              },
+            child: Text(widget.title),
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.home,
             ),
-            ListTile(
-              leading: Icon(
-                Icons.abc,
-              ),
-              title: const Text('All Words'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => AllWordsPage()));
-              },
+            title: const Text('Home'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.abc,
             ),
-            AboutListTile(
-              icon: Icon(
-                Icons.info,
-              ),
-              child: const Text('About'),
-              applicationIcon: Icon(Icons.local_play),
-              // onTap: () {
-              // Navigator.pop(context);
-              // },
-              applicationName: "Sight Words!",
-              applicationVersion: "0.0.1",
+            title: const Text('All Words'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => AllWordsPage()));
+            },
+          ),
+          AboutListTile(
+            icon: Icon(
+              Icons.info,
             ),
-          ],
-        ),
-      ),
+            applicationIcon: Icon(Icons.local_play),
+            applicationName: "Sight Words!",
+            applicationVersion: "0.0.1",
+            child: const Text('About'),
+          ),
+        ],
+      )),
       body: Center(
         child: GeneratorPage(),
       ),
@@ -396,12 +392,12 @@ class AllWordsPage extends StatelessWidget {
             margin: const EdgeInsets.all(8),
             child: Center(
               child: ListTile(
-                  title: Text(
-                    appState.sightWords[index].word,
-                    style: style,
-                    textAlign: TextAlign.center,
-                  ),
-                  ),
+                title: Text(
+                  appState.sightWords[index].word,
+                  style: style,
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ),
           );
         },
@@ -491,18 +487,26 @@ class SightWordCard extends StatelessWidget {
 
     final FlutterTts flutterTts = FlutterTts();
 
-    return Card(
-      color: sightWord.color,
-      child: InkWell(
-        onTap: () async {
-          await flutterTts.speak(sightWord.word);
-          print("sightword tapped");
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Text(
-            sightWord.word,
-            style: style,
+    return SizedBox(
+      height: 150,
+      width: 300,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        color: sightWord.color,
+        child: InkWell(
+          onTap: () async {
+            await flutterTts.speak(sightWord.word);
+            print("sightword tapped");
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Center(
+              child: Text(
+                sightWord.word,
+                style: style,
+                textAlign: TextAlign.center,
+              ),
+            ),
           ),
         ),
       ),
