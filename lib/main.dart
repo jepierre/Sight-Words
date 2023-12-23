@@ -115,7 +115,7 @@ class MyAppState extends ChangeNotifier {
     SightWord(id: 3, word: "does", color: Colors.blue),
     SightWord(id: 3, word: "have", color: Colors.blue),
     SightWord(id: 3, word: "ran", color: Colors.blue),
-    // purple words 
+    // purple words
     SightWord(id: 4, word: "came", color: Colors.purple),
     SightWord(id: 4, word: "its", color: Colors.purple),
     SightWord(id: 4, word: "man", color: Colors.purple),
@@ -155,7 +155,6 @@ class MyAppState extends ChangeNotifier {
     SightWord(id: 6, word: "were", color: Colors.black),
     SightWord(id: 6, word: "well", color: Colors.black),
     SightWord(id: 6, word: "ride", color: Colors.black),
-
   ];
 }
 
@@ -250,6 +249,12 @@ class _WordGroupPageState extends State<WordGroupPage> {
   var sightWordCounter = 1;
   final FlutterTts flutterTts = FlutterTts();
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   void getNext() {
     if (sightWordsOrder.isEmpty) {
       sightWordsOrder = Iterable<int>.generate(wordGroupList.length).toList();
@@ -307,7 +312,13 @@ class _WordGroupPageState extends State<WordGroupPage> {
           centerTitle: true,
           title: Text(widget.sightWordGroup.title, style: style),
           // backgroundColor: Theme.of(context).colorScheme.inversePrimary,),
-          backgroundColor: widget.sightWordGroup.color),
+          backgroundColor: widget.sightWordGroup.color,
+          leading: IconButton(
+          
+            icon: const Icon(Icons.arrow_back, color: Colors.white, size: 45,),
+            onPressed: () {Navigator.pop(context);},
+          ),
+          ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -458,20 +469,18 @@ class SightWordCard extends StatelessWidget {
 
     final FlutterTts flutterTts = FlutterTts();
 
-    return InkWell(
-      onTap: () async {
-        await flutterTts.speak(sightWord.word);
-        print("sightword tapped");
-      },
-      child: Card(
-        color: sightWord.color,
+    return Card(
+      color: sightWord.color,
+      child: InkWell(
+        onTap: () async {
+          await flutterTts.speak(sightWord.word);
+          print("sightword tapped");
+        },
         child: Padding(
           padding: const EdgeInsets.all(20),
-          child: InkWell(
-            child: Text(
-              sightWord.word,
-              style: style,
-            ),
+          child: Text(
+            sightWord.word,
+            style: style,
           ),
         ),
       ),
