@@ -21,6 +21,9 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(
+        routes: {
+          '/allwords': (context) => AllWordsPage(),
+        },
         title: 'Sight Words!',
         theme: ThemeData(
           useMaterial3: true,
@@ -176,56 +179,53 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(widget.title),
-        // leading: IconButton(
-        //   icon: const Icon(Icons.menu),
-        //   onPressed: () {},
-        // ),
       ),
-      // drawer: Drawer(
-      //   child: ListView(
-      //     // Important: Remove any padding from the ListView.
-      //     padding: EdgeInsets.zero,
-      //     children: [
-      //       DrawerHeader(
-      //         decoration: BoxDecoration(
-      //           color: Colors.blue,
-      //         ),
-      //         child: Text(widget.title),
-      //       ),
-      //       ListTile(
-      //         leading: Icon(
-      //           Icons.home,
-      //         ),
-      //         title: const Text('Home'),
-      //         onTap: () {
-      //           Navigator.pop(context);
-      //         },
-      //       ),
-      //       ListTile(
-      //         leading: Icon(
-      //           Icons.home,
-      //         ),
-      //         title: const Text('All Words'),
-      //         onTap: () {
-      //             Navigator.push(
-      //                 context,
-      //                 MaterialPageRoute(
-      //                     builder: (context) => AllWordsPage()));
-      //           // Navigator.pop(context);
-      //         },
-      //       ),
-      //       ListTile(
-      //         leading: Icon(
-      //           Icons.train,
-      //         ),
-      //         title: const Text('About'),
-      //         onTap: () {
-      //           Navigator.pop(context);
-      //         },
-      //       ),
-      //     ],
-      //   ),
-      // ),
+      drawer: Drawer(
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(widget.title),
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.home,
+              ),
+              title: const Text('Home'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.home,
+              ),
+              title: const Text('All Words'),
+              onTap: () {
+                Navigator.pop(context);
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => AllWordsPage()));
+              },
+            ),
+            AboutListTile(
+              icon: Icon(
+                Icons.info,
+              ),
+              child: const Text('About'),
+              applicationIcon: Icon(Icons.local_play),
+              // onTap: () {
+              // Navigator.pop(context);
+              // },
+              applicationName: "Sight Words!",
+              applicationVersion: "0.0.1",
+            ),
+          ],
+        ),
+      ),
       body: Center(
         child: GeneratorPage(),
       ),
@@ -309,16 +309,21 @@ class _WordGroupPageState extends State<WordGroupPage> {
 
     return Scaffold(
       appBar: AppBar(
-          centerTitle: true,
-          title: Text(widget.sightWordGroup.title, style: style),
-          // backgroundColor: Theme.of(context).colorScheme.inversePrimary,),
-          backgroundColor: widget.sightWordGroup.color,
-          leading: IconButton(
-          
-            icon: const Icon(Icons.arrow_back, color: Colors.white, size: 45,),
-            onPressed: () {Navigator.pop(context);},
+        centerTitle: true,
+        title: Text(widget.sightWordGroup.title, style: style),
+        // backgroundColor: Theme.of(context).colorScheme.inversePrimary,),
+        backgroundColor: widget.sightWordGroup.color,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+            size: 45,
           ),
-          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -372,18 +377,23 @@ class AllWordsPage extends StatelessWidget {
       return Center(child: Text("No words added yet!"));
     }
 
-    return ListView(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: Text('You have '
-              '${appState.sightWords.length} words.'),
-        ),
-        for (var sightWord in appState.sightWords)
-          ListTile(
-            title: Text(sightWord.word),
-          )
-      ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('First Route'),
+      ),
+      body: ListView(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Text('You have '
+                '${appState.sightWords.length} words.'),
+          ),
+          for (var sightWord in appState.sightWords)
+            ListTile(
+              title: Text(sightWord.word),
+            )
+        ],
+      ),
     );
   }
 }
