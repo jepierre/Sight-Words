@@ -1,13 +1,7 @@
-import 'dart:async';
-import 'dart:collection';
-import 'dart:math';
 import 'package:flutter_tts/flutter_tts.dart';
 
-import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
 
 void main() {
   runApp(MyApp());
@@ -71,48 +65,48 @@ class _MyHomePageState extends State<MyHomePage> {
         centerTitle: true,
         title: Text(widget.title),
       ),
-      drawer: Drawer(
-          child: ListView(
-        // Important: Remove any padding from the ListView.
-        padding: EdgeInsets.zero,
-        children: [
-          DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
-            ),
-            child: Text(widget.title),
-          ),
-          ListTile(
-            leading: Icon(
-              Icons.home,
-            ),
-            title: const Text('Home'),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            leading: Icon(
-              Icons.abc,
-            ),
-            title: const Text('All Words'),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => AllWordsPage()));
-            },
-          ),
-          AboutListTile(
-            icon: Icon(
-              Icons.info,
-            ),
-            applicationIcon: Icon(Icons.local_play),
-            applicationName: "Sight Words!",
-            applicationVersion: "0.0.1",
-            child: const Text('About'),
-          ),
-        ],
-      )),
+      // drawer: Drawer(
+      //     child: ListView(
+      //   // Important: Remove any padding from the ListView.
+      //   padding: EdgeInsets.zero,
+      //   children: [
+      //     DrawerHeader(
+      //       decoration: BoxDecoration(
+      //         color: Colors.blue,
+      //       ),
+      //       child: Text(widget.title),
+      //     ),
+      //     ListTile(
+      //       leading: Icon(
+      //         Icons.home,
+      //       ),
+      //       title: const Text('Home'),
+      //       onTap: () {
+      //         Navigator.pop(context);
+      //       },
+      //     ),
+      //     ListTile(
+      //       leading: Icon(
+      //         Icons.abc,
+      //       ),
+      //       title: const Text('All Words'),
+      //       onTap: () {
+      //         Navigator.pop(context);
+      //         Navigator.push(context,
+      //             MaterialPageRoute(builder: (context) => AllWordsPage()));
+      //       },
+      //     ),
+      //     AboutListTile(
+      //       icon: Icon(
+      //         Icons.info,
+      //       ),
+      //       applicationIcon: Icon(Icons.local_play),
+      //       applicationName: "Sight Words!",
+      //       applicationVersion: "0.0.1",
+      //       child: const Text('About'),
+      //     ),
+      //   ],
+      // )),
       body: Center(
         child: GeneratorPage(),
       ),
