@@ -121,9 +121,11 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class WordGroupPage extends StatefulWidget {
-  const WordGroupPage({super.key, required this.sightWordGroup});
+  const WordGroupPage(
+      {super.key, required this.sightWordGroup, required this.level});
 
   final SightWordGroup sightWordGroup;
+  final int level;
 
   @override
   State<WordGroupPage> createState() => _WordGroupPageState();
@@ -202,7 +204,7 @@ class _WordGroupPageState extends State<WordGroupPage> {
     if (wordGroupList.isEmpty) {
       return Scaffold(
         appBar: AppBar(
-            title: Text(widget.sightWordGroup.title, style: style),
+            title: Text("Level ${widget.level}", style: style),
             backgroundColor: widget.sightWordGroup.color),
         body: Center(child: Text("No words in group yet.")),
       );
@@ -211,7 +213,8 @@ class _WordGroupPageState extends State<WordGroupPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(widget.sightWordGroup.title, style: style),
+        title: Text("Level ${widget.level}", style: style),
+        // title: Text(widget.sightWordGroup.title, style: style),
         // backgroundColor: Theme.of(context).colorScheme.inversePrimary,),
         backgroundColor: widget.sightWordGroup.color,
         leading: IconButton(
@@ -331,7 +334,8 @@ class GeneratorPage extends StatelessWidget {
           child: Center(
             child: ListTile(
                 title: Text(
-                  appState.sightWordGroups[index].title,
+                  "Level $index",
+                  // appState.sightWordGroups[index].title,
                   style: style,
                   textAlign: TextAlign.center,
                 ),
@@ -340,8 +344,8 @@ class GeneratorPage extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                           builder: (context) => WordGroupPage(
-                              sightWordGroup:
-                                  appState.sightWordGroups[index])));
+                              sightWordGroup: appState.sightWordGroups[index],
+                              level: index)));
                 }),
           ),
         );
