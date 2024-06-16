@@ -397,6 +397,7 @@ class SightWordCard extends StatelessWidget {
         color: sightWord.color,
         child: InkWell(
           onTap: () async {
+            // await flutterTts.setVolume(3.0);
             await flutterTts.speak(sightWord.word);
             print("sightword tapped");
           },
