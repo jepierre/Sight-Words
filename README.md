@@ -1,6 +1,6 @@
-# sight_words
+# Sight Words 
 
-A new Flutter project.
+An app for kids to learn sight words.
 
 ## Getting Started
 
