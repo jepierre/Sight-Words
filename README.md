@@ -32,7 +32,7 @@ https://codelabs.developers.google.com/codelabs/flutter-codelab-first#6
 
 Features: 
 [x] order the word groups from easy to hard, use ROYGBV
-2. app should allow to review missed words
+[x] app should allow to review missed words
 [x] make miss and correct button
 [x] help button that says the word
 
