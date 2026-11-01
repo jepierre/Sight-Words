@@ -65,48 +65,48 @@ class _MyHomePageState extends State<MyHomePage> {
         centerTitle: true,
         title: Text(widget.title),
       ),
-      // drawer: Drawer(
-      //     child: ListView(
-      //   // Important: Remove any padding from the ListView.
-      //   padding: EdgeInsets.zero,
-      //   children: [
-      //     DrawerHeader(
-      //       decoration: BoxDecoration(
-      //         color: Colors.blue,
-      //       ),
-      //       child: Text(widget.title),
-      //     ),
-      //     ListTile(
-      //       leading: Icon(
-      //         Icons.home,
-      //       ),
-      //       title: const Text('Home'),
-      //       onTap: () {
-      //         Navigator.pop(context);
-      //       },
-      //     ),
-      //     ListTile(
-      //       leading: Icon(
-      //         Icons.abc,
-      //       ),
-      //       title: const Text('All Words'),
-      //       onTap: () {
-      //         Navigator.pop(context);
-      //         Navigator.push(context,
-      //             MaterialPageRoute(builder: (context) => AllWordsPage()));
-      //       },
-      //     ),
-      //     AboutListTile(
-      //       icon: Icon(
-      //         Icons.info,
-      //       ),
-      //       applicationIcon: Icon(Icons.local_play),
-      //       applicationName: "Sight Words!",
-      //       applicationVersion: "0.0.1",
-      //       child: const Text('About'),
-      //     ),
-      //   ],
-      // )),
+      drawer: Drawer(
+          child: ListView(
+        // Important: Remove any padding from the ListView.
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+            ),
+            child: Text(widget.title),
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.home,
+            ),
+            title: const Text('Home'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.abc,
+            ),
+            title: const Text('All Words'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => AllWordsPage()));
+            },
+          ),
+          AboutListTile(
+            icon: Icon(
+              Icons.info,
+            ),
+            applicationIcon: Icon(Icons.local_play),
+            applicationName: "Sight Words!",
+            applicationVersion: "0.0.1",
+            child: const Text('About'),
+          ),
+        ],
+      )),
       body: Center(
         child: GeneratorPage(),
       ),
