@@ -295,14 +295,16 @@ class AllWordsPage extends StatelessWidget {
         itemBuilder: (context, index) {
           return Container(
             // height: 150,
-            color: appState.sightWords[index].color,
             margin: const EdgeInsets.all(8),
-            child: Center(
-              child: ListTile(
-                title: Text(
-                  appState.sightWords[index].word,
-                  style: style,
-                  textAlign: TextAlign.center,
+            child: Material(
+              color: appState.sightWords[index].color,
+              child: Center(
+                child: ListTile(
+                  title: Text(
+                    appState.sightWords[index].word,
+                    style: style,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
             ),
@@ -329,24 +331,26 @@ class GeneratorPage extends StatelessWidget {
       itemBuilder: (context, index) {
         return Container(
           height: 150,
-          color: appState.sightWordGroups[index].color,
           margin: const EdgeInsets.all(8),
-          child: Center(
-            child: ListTile(
-                title: Text(
-                  "Level $index",
-                  // appState.sightWordGroups[index].title,
-                  style: style,
-                  textAlign: TextAlign.center,
-                ),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => WordGroupPage(
-                              sightWordGroup: appState.sightWordGroups[index],
-                              level: index)));
-                }),
+          child: Material(
+            color: appState.sightWordGroups[index].color,
+            child: Center(
+              child: ListTile(
+                  title: Text(
+                    "Level $index",
+                    // appState.sightWordGroups[index].title,
+                    style: style,
+                    textAlign: TextAlign.center,
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => WordGroupPage(
+                                sightWordGroup: appState.sightWordGroups[index],
+                                level: index)));
+                  }),
+            ),
           ),
         );
       },
