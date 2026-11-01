@@ -1,0 +1,168 @@
+{
+  "groups": [
+    {
+      "id": "red",
+      "title": "Red",
+      "description": "",
+      "color": "#F44336",
+      "words": [
+        {"id": "red-1", "word": "I"},
+        {"id": "red-2", "word": "can"},
+        {"id": "red-3", "word": "the"},
+        {"id": "red-4", "word": "see"},
+        {"id": "red-5", "word": "we"},
+        {"id": "red-6", "word": "a"},
+        {"id": "red-7", "word": "like"},
+        {"id": "red-8", "word": "to"},
+        {"id": "red-9", "word": "and"},
+        {"id": "red-10", "word": "go"},
+        {"id": "red-11", "word": "is"},
+        {"id": "red-12", "word": "my"},
+        {"id": "red-13", "word": "on"}
+      ]
+    },
+    {
+      "id": "orange",
+      "title": "Orange",
+      "description": "description",
+      "color": "#FF9800",
+      "words": [
+        {"id": "orange-1", "word": "me"},
+        {"id": "orange-2", "word": "in"},
+        {"id": "orange-3", "word": "so"},
+        {"id": "orange-4", "word": "it"},
+        {"id": "orange-5", "word": "up"},
+        {"id": "orange-6", "word": "at"},
+        {"id": "orange-7", "word": "he"},
+        {"id": "orange-8", "word": "do"},
+        {"id": "orange-9", "word": "you"},
+        {"id": "orange-10", "word": "no"},
+        {"id": "orange-11", "word": "am"},
+        {"id": "orange-12", "word": "big"},
+        {"id": "orange-13", "word": "play"}
+      ]
+    },
+    {
+      "id": "yellow",
+      "title": "Yellow",
+      "description": "description",
+      "color": "#FFEB3B",
+      "words": [
+        {"id": "yellow-1", "word": "went"},
+        {"id": "yellow-2", "word": "are"},
+        {"id": "yellow-3", "word": "this"},
+        {"id": "yellow-4", "word": "look"},
+        {"id": "yellow-5", "word": "for"},
+        {"id": "yellow-6", "word": "get"},
+        {"id": "yellow-7", "word": "come"},
+        {"id": "yellow-8", "word": "not"},
+        {"id": "yellow-9", "word": "two"},
+        {"id": "yellow-10", "word": "was"},
+        {"id": "yellow-11", "word": "make"},
+        {"id": "yellow-12", "word": "they"}
+      ]
+    },
+    {
+      "id": "green",
+      "title": "Green",
+      "description": "description",
+      "color": "#4CAF50",
+      "words": [
+        {"id": "green-1", "word": "will"},
+        {"id": "green-2", "word": "too"},
+        {"id": "green-3", "word": "all"},
+        {"id": "green-4", "word": "be"},
+        {"id": "green-5", "word": "ate"},
+        {"id": "green-6", "word": "one"},
+        {"id": "green-7", "word": "funny"},
+        {"id": "green-8", "word": "what"},
+        {"id": "green-9", "word": "did"},
+        {"id": "green-10", "word": "has"},
+        {"id": "green-11", "word": "of"},
+        {"id": "green-12", "word": "or"},
+        {"id": "green-13", "word": "with"}
+      ]
+    },
+    {
+      "id": "blue",
+      "title": "Blue",
+      "description": "description",
+      "color": "#2196F3",
+      "words": [
+        {"id": "blue-1", "word": "back"},
+        {"id": "blue-2", "word": "if"},
+        {"id": "blue-3", "word": "but"},
+        {"id": "blue-4", "word": "made"},
+        {"id": "blue-5", "word": "day"},
+        {"id": "blue-6", "word": "far"},
+        {"id": "blue-7", "word": "said"},
+        {"id": "blue-8", "word": "out"},
+        {"id": "blue-9", "word": "now"},
+        {"id": "blue-10", "word": "does"},
+        {"id": "blue-11", "word": "have"},
+        {"id": "blue-12", "word": "ran"}
+      ]
+    },
+    {
+      "id": "purple",
+      "title": "Purple",
+      "description": "description",
+      "color": "#9C27B0",
+      "words": [
+        {"id": "purple-1", "word": "came"},
+        {"id": "purple-2", "word": "its"},
+        {"id": "purple-3", "word": "man"},
+        {"id": "purple-4", "word": "she"},
+        {"id": "purple-5", "word": "use"},
+        {"id": "purple-6", "word": "word"},
+        {"id": "purple-7", "word": "his"},
+        {"id": "purple-8", "word": "more"},
+        {"id": "purple-9", "word": "write"},
+        {"id": "purple-10", "word": "yes"},
+        {"id": "purple-11", "word": "saw"},
+        {"id": "purple-12", "word": "way"},
+        {"id": "purple-13", "word": "who"}
+      ]
+    },
+    {
+      "id": "pink",
+      "title": "Pink",
+      "description": "description",
+      "color": "#E91E63",
+      "words": [
+        {"id": "pink-1", "word": "been"},
+        {"id": "pink-2", "word": "your"},
+        {"id": "pink-3", "word": "each"},
+        {"id": "pink-4", "word": "good"},
+        {"id": "pink-5", "word": "hand"},
+        {"id": "pink-6", "word": "first"},
+        {"id": "pink-7", "word": "help"},
+        {"id": "pink-8", "word": "into"},
+        {"id": "pink-9", "word": "here"},
+        {"id": "pink-10", "word": "many"},
+        {"id": "pink-11", "word": "little"},
+        {"id": "pink-12", "word": "long"}
+      ]
+    },
+    {
+      "id": "black",
+      "title": "Black",
+      "description": "description",
+      "color": "#000000",
+      "words": [
+        {"id": "black-1", "word": "must"},
+        {"id": "black-2", "word": "find"},
+        {"id": "black-3", "word": "new"},
+        {"id": "black-4", "word": "part"},
+        {"id": "black-5", "word": "please"},
+        {"id": "black-6", "word": "say"},
+        {"id": "black-7", "word": "there"},
+        {"id": "black-8", "word": "time"},
+        {"id": "black-9", "word": "want"},
+        {"id": "black-10", "word": "were"},
+        {"id": "black-11", "word": "well"},
+        {"id": "black-12", "word": "ride"}
+      ]
+    }
+  ]
+}

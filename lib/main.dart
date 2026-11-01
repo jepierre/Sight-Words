@@ -1,124 +1,183 @@
-import 'package:flutter_tts/flutter_tts.dart';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
 
+import 'src/progress_store.dart';
+import 'src/sight_word_catalog.dart';
+import 'src/word_progress.dart';
+
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, this.progressStore});
+
+  final ProgressStore? progressStore;
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
+      create: (_) => MyAppState(
+        progressStore: progressStore ?? SqliteProgressStore(),
+      )..initialize(),
       child: MaterialApp(
-        routes: {
-          '/allwords': (context) => AllWordsPage(),
-        },
         title: 'Sight Words!',
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color.fromARGB(255, 34, 93, 255)),
-          // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+            seedColor: const Color.fromARGB(255, 34, 93, 255),
+          ),
         ),
-        home: const MyHomePage(title: "Sight Words!"),
+        home: const MyHomePage(title: 'Sight Words!'),
       ),
     );
   }
 }
 
 class MyAppState extends ChangeNotifier {
-  var sightWordGroups = <SightWordGroup>[
-    SightWordGroup("Red", "", Colors.red),
-    SightWordGroup("Orange", "description", Colors.orange),
-    SightWordGroup("Yellow", "description", Colors.yellow),
-    SightWordGroup("Green", "description", Colors.green),
-    SightWordGroup("Blue", "description", Colors.blue),
-    SightWordGroup("Purple", "description", Colors.purple),
-    SightWordGroup("Pink", "description", Colors.pink),
-    SightWordGroup("Black", "description", Colors.black),
-  ];
+  MyAppState({required this.progressStore});
 
-  var sightWords = SightWords().sightWords;
+  final ProgressStore progressStore;
+  List<SightWordGroup> sightWordGroups = [];
+  List<SightWord> sightWords = [];
+  Map<String, WordProgress> wordProgress = {};
+  Object? initializationError;
+  bool isLoading = true;
+
+  Future<void> initialize() async {
+    isLoading = true;
+    initializationError = null;
+    notifyListeners();
+    try {
+      final groups = await SightWordCatalog.load();
+      await progressStore.migrateLegacyWordIds({
+        for (final group in groups)
+          for (final word in group.words)
+            '${group.id}-${word.word.toLowerCase()}': word.id,
+      });
+      final progress = await progressStore.loadAll();
+      sightWordGroups = groups;
+      sightWords = groups.expand((group) => group.words).toList();
+      wordProgress = progress;
+    } catch (error) {
+      initializationError = error;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  WordProgress progressFor(SightWord word) {
+    return wordProgress[word.id] ?? WordProgress.empty(word.id);
+  }
+
+  Future<void> recordAnswer(SightWord word, bool correct) async {
+    final progress = await progressStore.recordAnswer(word.id, correct);
+    wordProgress = {...wordProgress, word.id: progress};
+    notifyListeners();
+  }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  var selectedIndex = 0;
-
-  @override
   Widget build(BuildContext context) {
+    final appState = context.watch<MyAppState>();
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(widget.title),
+        title: Text(title),
       ),
       drawer: Drawer(
-          child: ListView(
-        // Important: Remove any padding from the ListView.
-        padding: EdgeInsets.zero,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: const BoxDecoration(color: Colors.blue),
+              child: Text(title),
+            ),
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text('Home'),
+              onTap: () => Navigator.pop(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.assessment),
+              title: const Text('Word progress'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AllWordsPage()),
+                );
+              },
+            ),
+            const AboutListTile(
+              icon: Icon(Icons.info),
+              applicationIcon: Icon(Icons.local_play),
+              applicationName: 'Sight Words!',
+              applicationVersion: '0.0.1',
+              child: Text('About'),
+            ),
+          ],
+        ),
+      ),
+      body: Center(
+        child: appState.isLoading
+            ? const CircularProgressIndicator()
+            : appState.initializationError != null
+                ? _LoadError(
+                    error: appState.initializationError!,
+                    onRetry: appState.initialize,
+                  )
+                : const GeneratorPage(),
+      ),
+    );
+  }
+}
+
+class _LoadError extends StatelessWidget {
+  const _LoadError({required this.error, required this.onRetry});
+
+  final Object error;
+  final Future<void> Function() onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
-            ),
-            child: Text(widget.title),
-          ),
-          ListTile(
-            leading: Icon(
-              Icons.home,
-            ),
-            title: const Text('Home'),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            leading: Icon(
-              Icons.abc,
-            ),
-            title: const Text('All Words'),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => AllWordsPage()));
-            },
-          ),
-          AboutListTile(
-            icon: Icon(
-              Icons.info,
-            ),
-            applicationIcon: Icon(Icons.local_play),
-            applicationName: "Sight Words!",
-            applicationVersion: "0.0.1",
-            child: const Text('About'),
+          const Text('Could not load sight words or saved progress.'),
+          const SizedBox(height: 8),
+          SelectableText('$error', textAlign: TextAlign.center),
+          const SizedBox(height: 16),
+          FilledButton(
+            onPressed: onRetry,
+            child: const Text('Try again'),
           ),
         ],
-      )),
-      body: Center(
-        child: GeneratorPage(),
       ),
     );
   }
 }
 
 class WordGroupPage extends StatefulWidget {
-  const WordGroupPage(
-      {super.key, required this.sightWordGroup, required this.level});
+  const WordGroupPage({
+    super.key,
+    required this.sightWordGroup,
+    required this.words,
+    required this.level,
+  });
 
   final SightWordGroup sightWordGroup;
+  final List<SightWord> words;
   final int level;
 
   @override
@@ -126,138 +185,101 @@ class WordGroupPage extends StatefulWidget {
 }
 
 class _WordGroupPageState extends State<WordGroupPage> {
-  var wordGroupIndex = 0;
-  var wordGroupList = <SightWord>[];
-  var sightWordsOrder = [];
+  late final List<int> sightWordsOrder;
+  late int wordGroupIndex;
   var sightWordCounter = 1;
-  final FlutterTts flutterTts = FlutterTts();
-  var sightWords = SightWords().sightWords;
+  var isSavingAnswer = false;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-
-    for (var sightWord in sightWords) {
-      if (sightWord.color.toARGB32() == widget.sightWordGroup.color.toARGB32() &&
-          !wordGroupList.contains(sightWord)) {
-        wordGroupList.add(sightWord);
-      }
-    }
-    if (sightWordsOrder.isEmpty) {
-      sightWordsOrder = Iterable<int>.generate(wordGroupList.length).toList();
-      sightWordsOrder.shuffle();
-
-      print(sightWordsOrder);
-      wordGroupIndex = sightWordsOrder.removeAt(0);
-    }
+    sightWordsOrder = List<int>.generate(widget.words.length, (index) => index)
+      ..shuffle();
+    wordGroupIndex = sightWordsOrder.isEmpty ? 0 : sightWordsOrder.removeAt(0);
   }
 
-  void getNext(bool lastWordStatusGood) {
-    if (!lastWordStatusGood) {
+  Future<void> answer(bool correct) async {
+    if (isSavingAnswer || widget.words.isEmpty) {
+      return;
+    }
+    setState(() => isSavingAnswer = true);
+    try {
+      await context
+          .read<MyAppState>()
+          .recordAnswer(widget.words[wordGroupIndex], correct);
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not save progress: $error')),
+        );
+      }
+      return;
+    } finally {
+      if (mounted) {
+        setState(() => isSavingAnswer = false);
+      }
+    }
+
+    if (!mounted) {
+      return;
+    }
+    if (!correct) {
       sightWordsOrder.add(wordGroupIndex);
     } else {
       sightWordCounter++;
     }
-    if (sightWordsOrder.isEmpty) {
-      sightWordsOrder = Iterable<int>.generate(wordGroupList.length).toList();
-      sightWordsOrder.shuffle();
 
-      print(sightWordsOrder);
+    if (sightWordsOrder.isEmpty) {
+      sightWordsOrder.addAll(
+        List<int>.generate(widget.words.length, (index) => index)..shuffle(),
+      );
       sightWordCounter = 1;
     }
-
     wordGroupIndex = sightWordsOrder.removeAt(0);
-
-    print("remaining elements: $sightWordsOrder");
-    print(
-        "index: $wordGroupIndex, text: ${wordGroupList[wordGroupIndex].word}");
-    setState(() {});
-  }
-
-  void getPrevious() {
-    wordGroupIndex--;
-
-    if (wordGroupIndex < 0) {
-      wordGroupIndex = wordGroupList.length - 1;
-    }
-    print(
-        "index: $wordGroupIndex, text: ${wordGroupList[wordGroupIndex].word}");
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-    final theme = Theme.of(context);
-
-    final style = theme.textTheme.displayMedium!.copyWith(
-      color: theme.colorScheme.onPrimary,
-    );
-
-    if (wordGroupList.isEmpty) {
+    final group = widget.sightWordGroup;
+    if (widget.words.isEmpty) {
       return Scaffold(
-        appBar: AppBar(
-            title: Text("Level ${widget.level}", style: style),
-            backgroundColor: widget.sightWordGroup.color),
-        body: Center(child: Text("No words in group yet.")),
+        appBar: AppBar(title: Text(group.title), backgroundColor: group.color),
+        body: const Center(child: Text('No words in group yet.')),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text("Level ${widget.level}", style: style),
-        // title: Text(widget.sightWordGroup.title, style: style),
-        // backgroundColor: Theme.of(context).colorScheme.inversePrimary,),
-        backgroundColor: widget.sightWordGroup.color,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-            size: 45,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        title: Text(group.title),
+        backgroundColor: group.color,
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SightWordCard(
-              sightWord: wordGroupList[wordGroupIndex],
-            ),
-            SizedBox(height: 10),
+            SightWordCard(sightWord: widget.words[wordGroupIndex]),
+            const SizedBox(height: 10),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  onPressed: () async {
-                    getNext(false);
-                  },
-                  icon: Icon(Icons.close, color: Colors.red, size: 50),
-                  // Text(''),
+                  onPressed: isSavingAnswer ? null : () => answer(false),
+                  icon: const Icon(Icons.close, color: Colors.red, size: 50),
+                  tooltip: 'Mark as not known',
                 ),
-                SizedBox(width: 50),
+                const SizedBox(width: 50),
                 IconButton(
-                  onPressed: () {
-                    getNext(true);
-                  },
-                  icon: Icon(
-                    Icons.check,
-                    color: Colors.green,
-                    size: 50,
-                  ),
-                  // Text(''),
+                  onPressed: isSavingAnswer ? null : () => answer(true),
+                  icon: const Icon(Icons.check, color: Colors.green, size: 50),
+                  tooltip: 'Mark as known',
                 ),
               ],
             ),
-            Center(
-              child: Text(
-                  "Learning $sightWordCounter of ${wordGroupList.length} words!"),
-            )
+            Text(
+              'Learning $sightWordCounter of ${widget.words.length} words!',
+            ),
           ],
         ),
       ),
@@ -266,85 +288,100 @@ class _WordGroupPageState extends State<WordGroupPage> {
 }
 
 class AllWordsPage extends StatelessWidget {
+  const AllWordsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-
-    if (appState.sightWords.isEmpty) {
-      return Center(child: Text("No words added yet!"));
-    }
-
-    final theme = Theme.of(context);
-
-    final style = theme.textTheme.displayMedium!.copyWith(
-      color: theme.colorScheme.onPrimary,
-    );
-
+    final appState = context.watch<MyAppState>();
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('All Words'),
-      ),
-      body: ListView.builder(
-        itemCount: appState.sightWords.length,
-        itemBuilder: (context, index) {
-          return Container(
-            // height: 150,
-            margin: const EdgeInsets.all(8),
-            child: Material(
-              color: appState.sightWords[index].color,
-              child: Center(
-                child: ListTile(
-                  title: Text(
-                    appState.sightWords[index].word,
-                    style: style,
-                    textAlign: TextAlign.center,
+      appBar: AppBar(title: const Text('Word Progress')),
+      body: appState.sightWords.isEmpty
+          ? const Center(child: Text('No words added yet.'))
+          : ListView.builder(
+              itemCount: appState.sightWords.length,
+              itemBuilder: (context, index) {
+                final word = appState.sightWords[index];
+                final progress = appState.progressFor(word);
+                final lastReviewed = progress.lastReviewedAt == null
+                    ? 'Never reviewed'
+                    : 'Last reviewed ${MaterialLocalizations.of(context).formatMediumDate(progress.lastReviewedAt!.toLocal())}';
+                return Card(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
                   ),
-                ),
-              ),
+                  color: word.color,
+                  child: ListTile(
+                    title: Text(
+                      word.word,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: Colors.white,
+                          ),
+                    ),
+                    subtitle: Text(
+                      '${progress.attempts} attempts · ${progress.correctCount} correct · '
+                      '${progress.incorrectCount} missed · '
+                      '${progress.currentStreak} correct in a row\n$lastReviewed',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    isThreeLine: true,
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }
 
 class GeneratorPage extends StatelessWidget {
+  const GeneratorPage({super.key});
+
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-
+    final appState = context.watch<MyAppState>();
     final theme = Theme.of(context);
-
-    final style = theme.textTheme.displayMedium!.copyWith(
-      color: theme.colorScheme.onPrimary,
-    );
 
     return ListView.builder(
       itemCount: appState.sightWordGroups.length,
       itemBuilder: (context, index) {
-        return Container(
-          height: 150,
+        final group = appState.sightWordGroups[index];
+        final progress =
+            group.words.map(appState.progressFor).toList(growable: false);
+        final reviewedCount =
+            progress.where((word) => word.attempts > 0).length;
+        final correctCount =
+            progress.fold(0, (total, word) => total + word.correctCount);
+        final incorrectCount =
+            progress.fold(0, (total, word) => total + word.incorrectCount);
+
+        return Card(
           margin: const EdgeInsets.all(8),
-          child: Material(
-            color: appState.sightWordGroups[index].color,
-            child: Center(
-              child: ListTile(
-                  title: Text(
-                    "Level $index",
-                    // appState.sightWordGroups[index].title,
-                    style: style,
-                    textAlign: TextAlign.center,
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => WordGroupPage(
-                                sightWordGroup: appState.sightWordGroups[index],
-                                level: index)));
-                  }),
+          color: group.color,
+          child: ListTile(
+            minVerticalPadding: 24,
+            title: Text(
+              'Level $index: ${group.title}',
+              style: theme.textTheme.titleLarge?.copyWith(color: Colors.white),
+              textAlign: TextAlign.center,
             ),
+            subtitle: Text(
+              '$reviewedCount of ${group.words.length} words practiced · '
+              '$correctCount correct · $incorrectCount missed',
+              style: const TextStyle(color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => WordGroupPage(
+                    sightWordGroup: group,
+                    words: group.words,
+                    level: index,
+                  ),
+                ),
+              );
+            },
           ),
         );
       },
@@ -352,47 +389,14 @@ class GeneratorPage extends StatelessWidget {
   }
 }
 
-class SightWord {
-  final int id;
-  final String word;
-  final Color color;
-
-  const SightWord({required this.id, required this.word, required this.color});
-
-  // Convert a Card into a Map
-  Map<String, dynamic> toMap() {
-    return {
-      "id": id,
-      "word": word,
-      "color": color,
-    };
-  }
-
-  // Implement toString to make it easier to see information about each card
-  @override
-  String toString() {
-    return 'Card{id: $id, word: $word, color: $color}';
-  }
-}
-
 class SightWordCard extends StatelessWidget {
-  const SightWordCard({
-    super.key,
-    required this.sightWord,
-  });
+  const SightWordCard({super.key, required this.sightWord});
 
   final SightWord sightWord;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    final style = theme.textTheme.displayMedium!.copyWith(
-      color: Colors.white,
-    );
-
-    final FlutterTts flutterTts = FlutterTts();
-
+    final flutterTts = FlutterTts();
     return SizedBox(
       height: 150,
       width: 300,
@@ -401,16 +405,17 @@ class SightWordCard extends StatelessWidget {
         color: sightWord.color,
         child: InkWell(
           onTap: () async {
-            // await flutterTts.setVolume(3.0);
             await flutterTts.speak(sightWord.word);
-            print("sightword tapped");
           },
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Center(
               child: Text(
                 sightWord.word,
-                style: style,
+                style: Theme.of(context)
+                    .textTheme
+                    .displayMedium
+                    ?.copyWith(color: Colors.white),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -419,125 +424,4 @@ class SightWordCard extends StatelessWidget {
       ),
     );
   }
-}
-
-class SightWordGroup {
-  final String title;
-  final String description;
-  final Color color;
-
-  const SightWordGroup(this.title, this.description, this.color);
-}
-
-class SightWords {
-  var sightWords = <SightWord>[
-    // red words
-    SightWord(id: 0, word: "I", color: Colors.red),
-    SightWord(id: 0, word: "can", color: Colors.red),
-    SightWord(id: 0, word: "the", color: Colors.red),
-    SightWord(id: 0, word: "see", color: Colors.red),
-    SightWord(id: 0, word: "we", color: Colors.red),
-    SightWord(id: 0, word: "a", color: Colors.red),
-    SightWord(id: 0, word: "like", color: Colors.red),
-    SightWord(id: 0, word: "to", color: Colors.red),
-    SightWord(id: 0, word: "and", color: Colors.red),
-    SightWord(id: 0, word: "go", color: Colors.red),
-    SightWord(id: 0, word: "is", color: Colors.red),
-    SightWord(id: 0, word: "my", color: Colors.red),
-    SightWord(id: 0, word: "on", color: Colors.red),
-    // orange words
-    SightWord(id: 1, word: "me", color: Colors.orange),
-    SightWord(id: 1, word: "in", color: Colors.orange),
-    SightWord(id: 1, word: "so", color: Colors.orange),
-    SightWord(id: 1, word: "it", color: Colors.orange),
-    SightWord(id: 1, word: "up", color: Colors.orange),
-    SightWord(id: 1, word: "at", color: Colors.orange),
-    SightWord(id: 1, word: "he", color: Colors.orange),
-    SightWord(id: 1, word: "do", color: Colors.orange),
-    SightWord(id: 1, word: "you", color: Colors.orange),
-    SightWord(id: 1, word: "no", color: Colors.orange),
-    SightWord(id: 1, word: "am", color: Colors.orange),
-    SightWord(id: 1, word: "big", color: Colors.orange),
-    SightWord(id: 1, word: "play", color: Colors.orange),
-    // yellow words
-    SightWord(id: 1, word: "went", color: Colors.yellow),
-    SightWord(id: 1, word: "are", color: Colors.yellow),
-    SightWord(id: 1, word: "this", color: Colors.yellow),
-    SightWord(id: 1, word: "look", color: Colors.yellow),
-    SightWord(id: 1, word: "for", color: Colors.yellow),
-    SightWord(id: 1, word: "get", color: Colors.yellow),
-    SightWord(id: 1, word: "come", color: Colors.yellow),
-    SightWord(id: 1, word: "not", color: Colors.yellow),
-    SightWord(id: 1, word: "two", color: Colors.yellow),
-    SightWord(id: 1, word: "was", color: Colors.yellow),
-    SightWord(id: 1, word: "make", color: Colors.yellow),
-    SightWord(id: 1, word: "they", color: Colors.yellow),
-    // green words
-    SightWord(id: 2, word: "will", color: Colors.green),
-    SightWord(id: 2, word: "too", color: Colors.green),
-    SightWord(id: 2, word: "all", color: Colors.green),
-    SightWord(id: 2, word: "be", color: Colors.green),
-    SightWord(id: 2, word: "ate", color: Colors.green),
-    SightWord(id: 2, word: "one", color: Colors.green),
-    SightWord(id: 2, word: "funny", color: Colors.green),
-    SightWord(id: 2, word: "what", color: Colors.green),
-    SightWord(id: 2, word: "did", color: Colors.green),
-    SightWord(id: 2, word: "has", color: Colors.green),
-    SightWord(id: 2, word: "of", color: Colors.green),
-    SightWord(id: 2, word: "or", color: Colors.green),
-    SightWord(id: 2, word: "with", color: Colors.green),
-    // blue words
-    SightWord(id: 3, word: "back", color: Colors.blue),
-    SightWord(id: 3, word: "if", color: Colors.blue),
-    SightWord(id: 3, word: "but", color: Colors.blue),
-    SightWord(id: 3, word: "made", color: Colors.blue),
-    SightWord(id: 3, word: "day", color: Colors.blue),
-    SightWord(id: 3, word: "far", color: Colors.blue),
-    SightWord(id: 3, word: "said", color: Colors.blue),
-    SightWord(id: 3, word: "out", color: Colors.blue),
-    SightWord(id: 3, word: "now", color: Colors.blue),
-    SightWord(id: 3, word: "does", color: Colors.blue),
-    SightWord(id: 3, word: "have", color: Colors.blue),
-    SightWord(id: 3, word: "ran", color: Colors.blue),
-    // purple words
-    SightWord(id: 4, word: "came", color: Colors.purple),
-    SightWord(id: 4, word: "its", color: Colors.purple),
-    SightWord(id: 4, word: "man", color: Colors.purple),
-    SightWord(id: 4, word: "she", color: Colors.purple),
-    SightWord(id: 4, word: "use", color: Colors.purple),
-    SightWord(id: 4, word: "word", color: Colors.purple),
-    SightWord(id: 4, word: "his", color: Colors.purple),
-    SightWord(id: 4, word: "more", color: Colors.purple),
-    SightWord(id: 4, word: "write", color: Colors.purple),
-    SightWord(id: 4, word: "yes", color: Colors.purple),
-    SightWord(id: 4, word: "saw", color: Colors.purple),
-    SightWord(id: 4, word: "way", color: Colors.purple),
-    SightWord(id: 4, word: "who", color: Colors.purple),
-    // pink words
-    SightWord(id: 5, word: "been", color: Colors.pink),
-    SightWord(id: 5, word: "your", color: Colors.pink),
-    SightWord(id: 5, word: "each", color: Colors.pink),
-    SightWord(id: 5, word: "good", color: Colors.pink),
-    SightWord(id: 5, word: "hand", color: Colors.pink),
-    SightWord(id: 5, word: "first", color: Colors.pink),
-    SightWord(id: 5, word: "help", color: Colors.pink),
-    SightWord(id: 5, word: "into", color: Colors.pink),
-    SightWord(id: 5, word: "here", color: Colors.pink),
-    SightWord(id: 5, word: "many", color: Colors.pink),
-    SightWord(id: 5, word: "little", color: Colors.pink),
-    SightWord(id: 5, word: "long", color: Colors.pink),
-    // black words
-    SightWord(id: 6, word: "must", color: Colors.black),
-    SightWord(id: 6, word: "find", color: Colors.black),
-    SightWord(id: 6, word: "new", color: Colors.black),
-    SightWord(id: 6, word: "part", color: Colors.black),
-    SightWord(id: 6, word: "please", color: Colors.black),
-    SightWord(id: 6, word: "say", color: Colors.black),
-    SightWord(id: 6, word: "there", color: Colors.black),
-    SightWord(id: 6, word: "time", color: Colors.black),
-    SightWord(id: 6, word: "want", color: Colors.black),
-    SightWord(id: 6, word: "were", color: Colors.black),
-    SightWord(id: 6, word: "well", color: Colors.black),
-    SightWord(id: 6, word: "ride", color: Colors.black),
-  ];
 }

@@ -36,6 +36,28 @@ Features:
 [x] make miss and correct button
 [x] help button that says the word
 
+## Configure sight words
+
+Edit [`assets/sight_words.json`](assets/sight_words.json) to change the groups, their display names and colors, or the words in each group. Each group has an `id`, `title`, `description`, a `#RRGGBB` color, and a `words` array. Every word has an `id` and `word` string:
+
+```json
+{
+  "groups": [
+    {
+      "id": "red",
+      "title": "Red",
+      "description": "",
+      "color": "#F44336",
+      "words": [
+        {"id": "red-1", "word": "I"},
+        {"id": "red-2", "word": "can"}
+      ]
+    }
+  ]
+}
+```
+
+Use short, unique IDs such as `red-1`, `red-2`, and `blue-1`. Keep each ID stable when editing a word or reordering the list; changing an ID starts fresh progress for that word. Existing progress from the earlier word-based IDs is migrated automatically. Review history is saved on the device in a SQLite database keyed by word ID. Progress tracks attempts, correct and incorrect answers, current correct streak, and last review time. It is available from **Word progress** in the navigation drawer.
 
 TODO: 
 [] Implement spaced repetition algorithm. 
