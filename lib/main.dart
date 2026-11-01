@@ -139,7 +139,7 @@ class _WordGroupPageState extends State<WordGroupPage> {
     super.initState();
 
     for (var sightWord in sightWords) {
-      if (sightWord.color.value == widget.sightWordGroup.color.value &&
+      if (sightWord.color.toARGB32() == widget.sightWordGroup.color.toARGB32() &&
           !wordGroupList.contains(sightWord)) {
         wordGroupList.add(sightWord);
       }
