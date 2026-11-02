@@ -3,6 +3,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
 
 import 'src/progress_store.dart';
+import 'src/sentence_game.dart';
 import 'src/sight_word_catalog.dart';
 import 'src/word_progress.dart';
 
@@ -25,11 +26,14 @@ class MyApp extends StatelessWidget {
         title: 'Sight Words!',
         theme: ThemeData(
           useMaterial3: true,
+          scaffoldBackgroundColor: const Color(0xFFF7F4FF),
+          appBarTheme: const AppBarTheme(
+              centerTitle: true, backgroundColor: Color(0xFFF7F4FF)),
           colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 34, 93, 255),
+            seedColor: const Color(0xFF6750C7),
           ),
         ),
-        home: const MyHomePage(title: 'Sight Words!'),
+        home: const MyHomePage(title: 'Sight Word Adventures'),
       ),
     );
   }
@@ -261,6 +265,9 @@ class _WordGroupPageState extends State<WordGroupPage> {
           children: [
             SightWordCard(sightWord: widget.words[wordGroupIndex]),
             const SizedBox(height: 10),
+            const Text('Tap the card to hear the word!',
+                style: TextStyle(fontSize: 18)),
+            const SizedBox(height: 16),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -342,9 +349,60 @@ class GeneratorPage extends StatelessWidget {
     final theme = Theme.of(context);
 
     return ListView.builder(
-      itemCount: appState.sightWordGroups.length,
-      itemBuilder: (context, index) {
+      padding: const EdgeInsets.all(16),
+      itemCount: appState.sightWordGroups.length + 1,
+      itemBuilder: (context, itemIndex) {
+        if (itemIndex == 0) {
+          return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text('Ready, set, read!',
+                    textAlign: TextAlign.center,
+                    style:
+                        TextStyle(fontSize: 32, fontWeight: FontWeight.w800)),
+                const Text('Little words. Big adventures.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 18)),
+                const SizedBox(height: 20),
+                Card(
+                    color: const Color(0xFFDFD5FF),
+                    child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(children: [
+                          const Icon(Icons.explore_rounded,
+                              size: 56, color: Color(0xFF5134A3)),
+                          const Text('Sentence Safari',
+                              style: TextStyle(
+                                  fontSize: 26, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 8),
+                          const Text(
+                              'Find the missing word. Collect five stars!',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 17)),
+                          const SizedBox(height: 16),
+                          FilledButton.icon(
+                              onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => SentenceGamePage(
+                                          words: appState.sightWords,
+                                          onAnswer: appState.recordAnswer))),
+                              icon: const Icon(Icons.play_arrow_rounded),
+                              label: const Text('Let’s play!')),
+                        ]))),
+                const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Text('Choose a word adventure',
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold))),
+              ]);
+        }
+        final index = itemIndex - 1;
         final group = appState.sightWordGroups[index];
+        final ink = ThemeData.estimateBrightnessForColor(group.color) ==
+                Brightness.light
+            ? const Color(0xFF29213D)
+            : Colors.white;
         final progress =
             group.words.map(appState.progressFor).toList(growable: false);
         final reviewedCount =
@@ -359,15 +417,18 @@ class GeneratorPage extends StatelessWidget {
           color: group.color,
           child: ListTile(
             minVerticalPadding: 24,
+            leading: Icon(Icons.auto_awesome_rounded, color: ink),
+            trailing: Icon(Icons.chevron_right_rounded, color: ink),
             title: Text(
               'Level $index: ${group.title}',
-              style: theme.textTheme.titleLarge?.copyWith(color: Colors.white),
+              style: theme.textTheme.titleLarge
+                  ?.copyWith(color: ink, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             subtitle: Text(
               '$reviewedCount of ${group.words.length} words practiced · '
               '$correctCount correct · $incorrectCount missed',
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: ink),
               textAlign: TextAlign.center,
             ),
             onTap: () {

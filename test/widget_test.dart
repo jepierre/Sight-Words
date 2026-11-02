@@ -1,8 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
 import 'package:namer_app/main.dart';
 import 'package:namer_app/src/progress_store.dart';
 import 'package:namer_app/src/sight_word_catalog.dart';
 import 'package:namer_app/src/word_progress.dart';
+import 'package:namer_app/src/sentence_game.dart';
 
 void main() {
   test('bundled catalog has unique word IDs and non-empty groups', () async {
@@ -30,6 +32,30 @@ void main() {
     expect(secondReview.incorrectCount, 1);
     expect(secondReview.currentStreak, 0);
     expect(secondReview.lastReviewedAt, DateTime.utc(2025, 1, 2));
+  });
+
+  test('every catalog word has one complete sentence puzzle', () async {
+    final groups = await SightWordCatalog.load();
+    final words = groups
+        .expand((group) => group.words)
+        .map((word) => word.word.toLowerCase())
+        .toSet();
+    final answers =
+        sentencePuzzles.map((puzzle) => puzzle.answer.toLowerCase());
+    expect(answers.toSet(), words);
+    expect(answers.toSet().length, sentencePuzzles.length);
+    for (final puzzle in sentencePuzzles) {
+      expect('___'.allMatches(puzzle.sentence).length, 1,
+          reason: puzzle.answer);
+      expect(puzzle.choices, hasLength(3));
+      expect(puzzle.choices.toSet(), hasLength(3));
+      expect(puzzle.choices, contains(puzzle.answer));
+      expect(
+          puzzle.choices
+              .every((choice) => words.contains(choice.toLowerCase())),
+          isTrue);
+      expect(puzzle.picture, isNotEmpty);
+    }
   });
 
   testWidgets('records a review and shows group progress', (tester) async {
@@ -83,6 +109,48 @@ void main() {
       find.textContaining('1 of 13 words practiced · 1 correct · 0 missed'),
       findsOneWidget,
     );
+  });
+  testWidgets('sentence safari retries, saves progress and earns a trophy',
+      (tester) async {
+    tester.view.resetPhysicalSize();
+    tester.view.physicalSize = const Size(1000, 1400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final groups = await tester.runAsync(() => SightWordCatalog.load());
+    final store = _MemoryProgressStore();
+    await tester.pumpWidget(MaterialApp(
+        home: SentenceGamePage(
+      words: groups!.expand((group) => group.words).toList(),
+      onAnswer: (word, correct) async {
+        await store.recordAnswer(word.id, correct);
+      },
+    )));
+    for (var index = 0; index < 5; index++) {
+      final puzzle = sentencePuzzles.firstWhere((p) => find
+          .text(p.sentence.replaceFirst('___', '_____'))
+          .evaluate()
+          .isNotEmpty);
+      final wrong =
+          puzzle.choices.firstWhere((choice) => choice != puzzle.answer);
+      await tester.tap(find.byKey(ValueKey('choice-$wrong')));
+      await tester.pumpAndSettle();
+      expect(find.text('Good try! Pick another word.'), findsOneWidget);
+      await tester.tap(find.byKey(ValueKey('choice-${puzzle.answer}')));
+      await tester.pumpAndSettle();
+      expect(find.text('You did it! A star for you!'), findsOneWidget);
+      await tester.ensureVisible(
+          find.text(index == 4 ? 'Get my trophy!' : 'Next sentence'));
+      await tester
+          .tap(find.text(index == 4 ? 'Get my trophy!' : 'Next sentence'));
+      await tester.pumpAndSettle();
+    }
+    expect(find.text('Safari superstar!'), findsOneWidget);
+    expect(
+        store.progress.values.fold<int>(0, (sum, p) => sum + p.attempts), 10);
+    await tester.tap(find.text('Play again'));
+    await tester.pumpAndSettle();
+    expect(find.text('Sentence 1 of 5'), findsOneWidget);
   });
 }
 
